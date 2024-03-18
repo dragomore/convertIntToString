@@ -2,15 +2,16 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        int[] a = { 1,1,1,1,1,1,2,2,3,3 };
-        convertArrayToString( a );
+        int[] inputArray = { 0,0,0,1,0,0,0,1,1,1,1,1 };
+        convertArrayToString( inputArray );
     }
     public static void addWordKey(List<Map.Entry<Integer, Integer>> list, Integer key, Integer value){
         list.add(new HashMap.SimpleEntry<>( key, value ));
-    }
+     }
     public static void convertArrayToString( int[] array ){
         List<Map.Entry<Integer, Integer>> words = new ArrayList<>();
 
+        // letters library
         char[] key1 = {'а', 'б', 'в', 'г'};
         char[] key2 = {'д', 'е', 'ё', 'ж'};
         char[] key3 = {'з', 'и', 'й', 'к'};
@@ -21,30 +22,47 @@ public class Main {
         char[] key8 = {'ъ', 'ы', 'ь'};
         char[] key9 = {'э', 'ю', 'я'};
 
-        int tmp = array[0];
-        int tmpCount = 0;
+        int tmp;
+        int previousNum = 9999;
         int count = 0;
 
-        // get counts of nums
+        // parsing array
         for( int i = 0; i < array.length; i++ ){
+            tmp = array[i];
+            if( tmp == 0 && previousNum == 0 ){
+                addWordKey( words, tmp, count );
+                addWordKey( words, 10, 0 );
+            }
+            if( tmp == 0 ){
+                if( i == 0 && array[0] == 0 ){
+                    continue;
+                }
+                addWordKey( words, array[ i - 1 ], count );
+                count = 0;
+                continue;
+            }
+            if( count == 4  ){
+                addWordKey( words, tmp, 4 );
+                count = 0;
+                tmp = array[i];
+            }
             if( tmp != array[i] ) {
                 tmp = array[i];
                 addWordKey(words, tmp, count);
                 count = 0;
             }
-            if( count == 4 ){
-                addWordKey(words, tmp, 4);
-                count = 0;
-            }
-            if( i == array.length - 1 )
+            if( i == array.length - 1 ) {
                 addWordKey(words, tmp, count + 1);
+            }
             count++;
-//            System.out.println("i: " + i + " count: " + count);
+            previousNum = tmp;
+//            System.out.println("Tmp: " + tmp + " count: " + count);
         }
 
+        // create string
         StringBuilder convertedArray = new StringBuilder();
         for( Map.Entry<Integer, Integer> i : words){
-            System.out.println("Key: " + i.getKey() + " Value: " + i.getValue());
+//            System.out.println("Key: " + i.getKey() + " Value: " + i.getValue());
             switch( i.getKey() ) {
                 case 1 : {
                     if( i.getValue() != 0 )
@@ -109,6 +127,11 @@ public class Main {
                         convertedArray.append( key9[ i.getValue() ] );
                     break;
                 }
+                case 0 : {
+                    convertedArray.append(" ");
+                    break;
+                }
+//                default: convertedArray.append(" ");
             }
         }
         System.out.println(convertedArray);
